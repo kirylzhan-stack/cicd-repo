@@ -1,6 +1,6 @@
 name: SonarQube
 
-inputs:
+secrets:
   SONAR_TOKEN:
     required: true
   SONAR_HOST_URL:
@@ -16,8 +16,8 @@ runs:
       with:
         fetch-depth: 0
         args: >
-          -Dsonar.projectKey=${{ inputs.SONAR_PROJECT_KEY }}
+          -Dsonar.projectKey=${{ secrets.SONAR_PROJECT_KEY }}
           -Dsonar.qualitygate.wait=true
       env:
-        SONAR_TOKEN: ${{ inputs.SONAR_TOKEN }}
-        SONAR_HOST_URL: ${{ inputs.SONAR_HOST_URL}}
+        SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
+        SONAR_HOST_URL: ${{ secrets.SONAR_HOST_URL}}
