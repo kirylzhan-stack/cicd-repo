@@ -1,10 +1,10 @@
-name: Build
+name: Unit-Tests
 
 on:
   workflow_call:
 
 jobs:
-  Unit-tests:
+  Unit-Tests:
     runs-on: ubuntu-latest
     steps:
       - name: Checkout code
