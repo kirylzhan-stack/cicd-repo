@@ -1,0 +1,13 @@
+name: Build
+
+inputs:
+  FOLDER_PATH:
+    required: true
+
+runs:
+  using: "composite"
+  steps:
+    - name: test
+      shell: bash
+      run: |
+        npm test

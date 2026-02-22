@@ -1,0 +1,23 @@
+name: SonarQube
+
+inputs:
+  SONAR_TOKEN:
+    required: true
+  SONAR_HOST_URL:
+    required: true
+  SONAR_PROJECT_KEY:
+    required: true
+
+runs:
+  using: "composite"
+  steps:
+    - name: SonarQube
+      uses: SonarSource/sonarqube-scan-action@v7
+      with:
+        fetch-depth: 0
+        args: >
+          -Dsonar.projectKey=${{ inputs.SONAR_PROJECT_KEY }}
+          -Dsonar.qualitygate.wait=true
+      env:
+        SONAR_TOKEN: ${{ inputs.SONAR_TOKEN }}
+        SONAR_HOST_URL: ${{ inputs.SONAR_HOST_URL}}

@@ -1,0 +1,10 @@
+name: Build
+
+runs:
+  using: "composite"
+  steps:
+    - name: Build
+      shell: bash
+      run: |
+        npm install
+        npm run build
