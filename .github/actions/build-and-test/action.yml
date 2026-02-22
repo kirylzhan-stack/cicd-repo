@@ -13,6 +13,6 @@ runs:
       shell: bash
       run: |
         npm ci
-        npm run lint
-        npm test
         npm run build
+        npm run lint
+        npm run test
