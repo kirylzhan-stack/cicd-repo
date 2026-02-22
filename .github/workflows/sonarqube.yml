@@ -1,23 +1,30 @@
 name: SonarQube
 
-secrets:
-  SONAR_TOKEN:
-    required: true
-  SONAR_HOST_URL:
-    required: true
-  SONAR_PROJECT_KEY:
-    required: true
+on:
+  workflow_call:
+    secrets:
+      SONAR_TOKEN:
+        required: true
+      SONAR_HOST_URL:
+        required: true
+      SONAR_PROJECT_KEY:
+        required: true
 
-runs:
-  using: "composite"
-  steps:
-    - name: SonarQube
-      uses: SonarSource/sonarqube-scan-action@v7
-      with:
-        fetch-depth: 0
-        args: >
-          -Dsonar.projectKey=${{ secrets.SONAR_PROJECT_KEY }}
-          -Dsonar.qualitygate.wait=true
-      env:
-        SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
-        SONAR_HOST_URL: ${{ secrets.SONAR_HOST_URL}}
+jobs:
+  SonarQube:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: SonarQube
+        uses: SonarSource/sonarqube-scan-action@v7
+        with:
+          args: >
+            -Dsonar.projectKey=${{ secrets.SONAR_PROJECT_KEY }}
+            -Dsonar.qualitygate.wait=true
+        env:
+          SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
+          SONAR_HOST_URL: ${{ secrets.SONAR_HOST_URL}}

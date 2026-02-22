@@ -1,16 +1,16 @@
 name: Build
 
-inputs:
-  FOLDER_PATH:
-    required: true
+on:
+  workflow_call:
 
-runs:
-  using: "composite"
-  steps:
-    - name: Build
-      env:
-        FOLDER_PATH: ${{ inputs.FOLDER_PATH}}
-      shell: bash
-      run: |
-        npm install
-        npm run build
+jobs:
+  Build:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Build
+        run: |
+          npm install
+          npm run build

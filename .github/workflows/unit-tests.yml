@@ -1,15 +1,11 @@
 name: Build
 
-inputs:
-  FOLDER_PATH:
-    required: true
+on:
+  workflow_call:
 
-runs:
-  using: "composite"
-  steps:
-    - name: test
-      env:
-        FOLDER_PATH: ${{ inputs.FOLDER_PATH}}
-      shell: bash
-      run: |
-        npm test
+jobs:
+  Unit-tests:
+    runs-on: ubuntu-latest
+    steps:
+      - name: test
+        run: npm test
