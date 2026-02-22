@@ -8,6 +8,8 @@ runs:
   using: "composite"
   steps:
     - name: test
+      env:
+        FOLDER_PATH: ${{ inputs.FOLDER_PATH}}
       shell: bash
       run: |
         npm test
