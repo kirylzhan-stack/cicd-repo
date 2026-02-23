@@ -16,6 +16,7 @@ runs:
       env:
         GH_TOKEN: ${{ inputs.GH_TOKEN }}
         REPO: ${{ inputs.REPO }}
+      shell: bash
       run: |
         echo '{
           "required_linear_history": true,
