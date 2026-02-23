@@ -1,11 +1,6 @@
 name: Build and Test
 description: "Install and test my npm package"
 
-inputs:
-  VERSION:
-    required: true
-    description: a package version
-
 runs:
   using: "composite"
   steps:
