@@ -101,4 +101,4 @@ runs:
         PR_URL: ${{ github.event.pull_request.html_url }}
       run: |
         echo "Enabling auto-merge for $PR_URL..."
-        gh pr merge "$PR_URL" --auto --merge
+        gh pr merge "$PR_URL" --auto --squash
