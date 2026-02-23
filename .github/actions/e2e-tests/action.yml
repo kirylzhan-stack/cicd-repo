@@ -44,4 +44,5 @@ runs:
         npm init -y
         npm pkg set type="module"
         npm install $PACK_NAME --registry http://localhost:4873
+        bash test_init
         node test.js
