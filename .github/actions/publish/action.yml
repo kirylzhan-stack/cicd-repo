@@ -65,7 +65,6 @@ runs:
         PR_VERSION=$(jq -r '.version' pr-code/package.json)
         echo "Checking if $PACK_NAME@$PR_VERSION exists on npm..."
           
-        # 2>/dev/null скрывает ошибки, если пакет вообще новый
         PUBLISHED_VERSION=$(npm view "$PACK_NAME@$PR_VERSION" version 2>/dev/null || echo "not-found")
           
         if [ "$PUBLISHED_VERSION" == "$PR_VERSION" ]; then
