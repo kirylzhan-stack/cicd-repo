@@ -90,8 +90,12 @@ runs:
       env:
         GH_TOKEN: ${{ inputs.GH_TOKEN }}
         REPO: ${{ inputs.REPO }}
-        V_NAME: "dev-${{ steps.version_init.outputs.PR_VERSION }}"
+        VERSION: "dev-${{ steps.version_init.outputs.PR_VERSION }}"
+        RUN_ID: ${{ github.run_id }}
       run: |
         gh variable set PUBLISH_ARTIFACT \
-          --body "$V_NAME" \
+          --body "$VERSION" \
+          --repo $REPO
+        gh variable set RUN_ID \
+          --body "$RUN_ID" \
           --repo $REPO
