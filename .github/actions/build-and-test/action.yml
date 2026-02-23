@@ -1,6 +1,11 @@
 name: Build and Test
 description: "Install and test my npm package"
 
+inputs:
+  VERSION:
+    required: true
+    description: a package version
+
 runs:
   using: "composite"
   steps:
@@ -17,3 +22,12 @@ runs:
         npm run build
         npm run lint
         npm run test
+
+    - name: Upload Build
+      uses: actions/upload-artifact@v4
+      with:
+        name: dev-${{ inputs.VERSION }}
+        path: |
+          ./dist
+          package.json
+        retention-days: 1
