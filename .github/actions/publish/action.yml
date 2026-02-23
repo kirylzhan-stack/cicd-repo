@@ -1,6 +1,14 @@
 name: Publish
 description: check versions and generate a publish artifact
 
+inputs:
+  GH_TOKEN:
+    required: true
+    description: access token
+  REPO:
+    required: true
+    description: repo path
+
 outputs:
   PR_VERSION:
     description: pull request version
@@ -75,3 +83,10 @@ runs:
         name: dev-${{ steps.version_init.outputs.PR_VERSION }}
         path: ./pr-code/*.tgz
         retention-days: 5
+
+    - name: Change VERSION vars
+      shell: bash
+      env:
+        GH_TOKEN: ${{ inputs.GH_TOKEN }}
+        REPO: ${{ inputs.REPO }}
+      run: gh variable set PUBLISH_ARTIFACT --body "dev-${{ steps.version_init.outputs.PR_VERSION }}"
