@@ -38,7 +38,7 @@ runs:
     - name: Run E2E Package Test
       shell: bash
       run: |
-        PACK_NAME=$(jq -r '.name' package.json)
+        export PACK_NAME=$(jq -r '.name' package.json)
         mkdir -p test
         cd test
         npm init -y
