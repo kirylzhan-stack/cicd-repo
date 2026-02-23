@@ -39,7 +39,7 @@ runs:
       shell: bash
       run: |
         PACK_NAME=$(jq -r '.name' package.json)
-        mkdir test
+        mkdir -p test
         cd test
         npm init -y
         npm pkg set type="module"
