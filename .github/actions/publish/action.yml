@@ -75,13 +75,14 @@ runs:
         cd pr-code
         npm ci
         npm run build
-        npm pack
 
     - name: Upload Release Candidate Artifact
       uses: actions/upload-artifact@v4
       with:
         name: dev-${{ steps.version_init.outputs.PR_VERSION }}
-        path: ./pr-code/*.tgz
+        path: |
+          ./pr-code/dist
+          ./pr-code/package.json
         retention-days: 5
 
     - name: Change VERSION vars
