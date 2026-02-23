@@ -1,5 +1,5 @@
 name: Build and Test
-description: "Install and test my npm package"
+description: Install and test my npm package
 
 runs:
   using: "composite"
