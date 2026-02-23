@@ -93,4 +93,4 @@ runs:
       run: |
         gh variable set PUBLISH_ARTIFACT \
           --body "$V_NAME" \
-          --repo "${{ inputs.REPO }}"
+          --repo $REPO
