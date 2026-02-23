@@ -18,6 +18,7 @@ runs:
         REPO: ${{ inputs.REPO }}
       shell: bash
       run: |
+        gh api -X PATCH /repos/$REPO -f allow_auto_merge=true
         echo '{
           "required_linear_history": true,
           "enforce_admins": true,

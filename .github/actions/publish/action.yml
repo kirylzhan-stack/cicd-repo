@@ -12,7 +12,10 @@ inputs:
 outputs:
   PR_VERSION:
     description: pull request version
-    value: ${{ steps.version_init.outputs.PR_VERSION }}
+    value: ${{ steps.vars_init.outputs.PR_VERSION }}
+  SHORT_SHA:
+    description: a commit short sha
+    value: ${{ steps.vars_init.outputs.SHORT_SHA }}
 
 runs:
   using: "composite"
@@ -34,10 +37,12 @@ runs:
         node-version: "20"
         registry-url: "https://registry.npmjs.org"
 
-    - name: Version Init
-      id: version_init
+    - name: Vars Init
+      id: vars_init
       shell: bash
-      run: echo "PR_VERSION=$(jq -r .version pr-code/package.json)" >> $GITHUB_OUTPUT
+      run: |
+        echo "PR_VERSION=$(jq -r .version pr-code/package.json)" >> $GITHUB_OUTPUT
+        echo "SHORT_SHA=${GITHUB_SHA::7}" >> $GITHUB_OUTPUT
 
     - name: Compare Versions (Base vs PR)
       shell: bash
@@ -70,32 +75,30 @@ runs:
         echo "✅ Version $PR_VERSION is free to publish."
 
     - name: Build Release Candidate
+      env:
+        PR_VERSION: ${{ steps.vars_init.outputs.PR_VERSION }}
+        SHORT_SHA: ${{ steps.vars_init.outputs.SHORT_SHA }}
       shell: bash
       run: |
         cd pr-code
+        npm version $PR_VERSION-dev-$SHORT_SHA --no-git-tag-version
         npm ci
         npm run build
 
     - name: Upload Release Candidate Artifact
       uses: actions/upload-artifact@v4
       with:
-        name: dev-${{ steps.version_init.outputs.PR_VERSION }}
+        name: ${{ steps.vars_init.outputs.PR_VERSION }}-dev-${{ steps.vars_init.outputs.SHORT_SHA }}
         path: |
           ./pr-code/dist
           ./pr-code/package.json
         retention-days: 5
 
-    - name: Change VERSION vars
+    - name: Auto-Merge
       shell: bash
       env:
         GH_TOKEN: ${{ inputs.GH_TOKEN }}
-        REPO: ${{ inputs.REPO }}
-        VERSION: "dev-${{ steps.version_init.outputs.PR_VERSION }}"
-        RUN_ID: ${{ github.run_id }}
+        PR_URL: ${{ github.event.pull_request.html_url }}
       run: |
-        gh variable set PUBLISH_ARTIFACT \
-          --body "$VERSION" \
-          --repo $REPO
-        gh variable set RUN_ID \
-          --body "$RUN_ID" \
-          --repo $REPO
+        echo "Enabling auto-merge for $PR_URL..."
+        gh pr merge "$PR_URL" --auto --merge

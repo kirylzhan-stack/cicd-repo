@@ -1,6 +1,11 @@
 name: Build and Test
 description: Install and test my npm package
 
+outputs:
+  VERSION:
+    description: build version
+    value: ${{ steps.version_init.outputs.VERSION }}
+
 runs:
   using: "composite"
   steps:
@@ -14,8 +19,19 @@ runs:
 
     - name: Build and Test
       shell: bash
+      id: version_init
       run: |
         npm ci
+        echo "VERSION=$(jq -r .version package.json)" >> $GITHUB_OUTPUT
         npm run build
         npm run lint
         npm run test
+
+    - name: Build Artifact
+      uses: actions/upload-artifact@v4
+      with:
+        name: dev-${{ steps.version_init.outputs.VERSION }}
+        path: |
+          ./dist
+          ./package.json
+        retention-days: 1
