@@ -1,0 +1,77 @@
+name: Publish
+description: check versions and generate a publish artifact
+
+outputs:
+  PR_VERSION:
+    description: pull request version
+    value: ${{ steps.version_init.outputs.PR_VERSION }}
+
+runs:
+  using: "composite"
+  steps:
+    - name: Checkout Base Branch
+      uses: actions/checkout@v4
+      with:
+        ref: ${{ github.base_ref }}
+        path: base-code
+
+    - name: Checkout PR Branch
+      uses: actions/checkout@v4
+      with:
+        path: pr-code
+
+    - name: Setup Node
+      uses: actions/setup-node@v4
+      with:
+        node-version: "20"
+        registry-url: "https://registry.npmjs.org"
+
+    - name: Version Init
+      id: version_init
+      shell: bash
+      run: echo "PR_VERSION=$(jq -r .version pr-code/package.json)" >> $GITHUB_OUTPUT
+
+    - name: Compare Versions (Base vs PR)
+      shell: bash
+      run: |
+        BASE_VERSION=$(jq -r '.version' base-code/package.json)
+        PR_VERSION=$(jq -r '.version' pr-code/package.json)
+          
+        echo "Base (main) version: $BASE_VERSION"
+        echo "PR version: $PR_VERSION"
+          
+        if [ "$BASE_VERSION" == "$PR_VERSION" ]; then
+          echo "::error::Version was not bumped! PR version ($PR_VERSION) is the same as main ($BASE_VERSION)."
+          exit 1
+        fi
+
+    - name: Check NPM Registry
+      shell: bash
+      run: |
+        PACK_NAME=$(jq -r '.name' pr-code/package.json)
+        PR_VERSION=$(jq -r '.version' pr-code/package.json)
+        echo "Checking if $PACK_NAME@$PR_VERSION exists on npm..."
+          
+        # 2>/dev/null скрывает ошибки, если пакет вообще новый
+        PUBLISHED_VERSION=$(npm view "$PACK_NAME@$PR_VERSION" version 2>/dev/null || echo "not-found")
+          
+        if [ "$PUBLISHED_VERSION" == "$PR_VERSION" ]; then
+          echo "::error::Version $PR_VERSION of $PACK_NAME is already published to the global registry!"
+          exit 1
+        fi
+        echo "✅ Version $PR_VERSION is free to publish."
+
+    - name: Build Release Candidate
+      shell: bash
+      run: |
+        cd pr-code
+        npm ci
+        npm run build
+        npm pack
+
+    - name: Upload Release Candidate Artifact
+      uses: actions/upload-artifact@v4
+      with:
+        name: dev-${{ steps.version_init.outputs.PR_VERSION }}
+        path: ./pr-code/*.tgz
+        retention-days: 5
