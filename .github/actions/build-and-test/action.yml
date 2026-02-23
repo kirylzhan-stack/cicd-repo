@@ -11,8 +11,6 @@ runs:
   steps:
     - name: Checkout code
       uses: actions/checkout@v4
-      with:
-        ref: ${{ github.ref_name }}
 
     - name: Setup Node
       uses: actions/setup-node@v4
